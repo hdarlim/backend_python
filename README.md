@@ -26,19 +26,52 @@ pip install flask flask-cors werkzeug
 python main.py
 ```
 
-A API estará disponível em `http://localhost:5000`
+O servidor estará disponível em `http://localhost:5000`
 
-## Endpoints
+## Interface Web
+
+Acesse `http://localhost:5000` no navegador para usar a **interface gráfica** com:
+- 📝 Formulário para cadastrar clientes
+- 🛍️ Formulário para cadastrar produtos
+- 📋 Formulário para criar pedidos
+- 📊 Visualização de todos os pedidos
+
+## Endpoints da API
 
 ### Clientes
 - `POST /clientes` - Cadastrar novo cliente
+  ```json
+  {
+    "nome": "João Silva",
+    "email": "joao@email.com",
+    "senha": "123456",
+    "telefone": "11999999999",
+    "endereco": "Rua..., Número..."
+  }
+  ```
 
 ### Produtos
 - `POST /produtos` - Cadastrar novo produto
+  ```json
+  {
+    "tipo": "Extensão",
+    "nome": "Curso de Python",
+    "descricao": "Descrição do produto"
+  }
+  ```
 
 ### Pedidos
 - `POST /pedidos` - Criar novo pedido
-- `GET /pedidos/completos` - Listar pedidos completos
+  ```json
+  {
+    "id_cliente": 1,
+    "data": "2026-06-24",
+    "status": "pendente",
+    "total": 100.00
+  }
+  ```
+
+- `GET /pedidos/completos` - Listar todos os pedidos com detalhes
 
 ## Tecnologias
 
