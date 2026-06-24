@@ -65,6 +65,36 @@ class Pedido:
         finally:
             conn.close()
 
+    def alterar_status(self, id_pedido, novo_status):
+        """Atualiza o campo status de um pedido."""
+        conn = self.db.conectar()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                'UPDATE Pedido SET status = ? WHERE id_pedido = ?',
+                (novo_status, id_pedido)
+            )
+            conn.commit()
+            return cursor.rowcount
+        finally:
+            conn.close()
+
+    def listar_simples(self, status=None):
+        """Retorna lista simples de pedidos, opcionalmente filtrada por status."""
+        conn = self.db.conectar()
+        try:
+            cursor = conn.cursor()
+            if status:
+                rows = cursor.execute(
+                    'SELECT id_pedido, id_cliente, data, status, total FROM Pedido WHERE status = ?',
+                    (status,)
+                ).fetchall()
+            else:
+                rows = cursor.execute('SELECT id_pedido, id_cliente, data, status, total FROM Pedido').fetchall()
+            return [dict(r) for r in rows]
+        finally:
+            conn.close()
+
 
 class ItemPedido:
     """Gerencia itens vinculados a um pedido."""
@@ -72,14 +102,21 @@ class ItemPedido:
     def __init__(self, db):
         self.db = db
 
-    def adicionar(self, id_pedido, id_produto, qtd_pedido, valor_unitario):
+    def adicionar(self, id_pedido, id_produto, qtd_pedido):
         """
-        Insere um item no pedido e atualiza o total automaticamente.
+        Insere um item no pedido usando o valor_unitario do produto cadastrado
+        e atualiza o total automaticamente.
         Lança ValueError em caso de integridade violada.
         """
         conn = self.db.conectar()
         try:
             cursor = conn.cursor()
+            # obter preço do produto
+            row = cursor.execute('SELECT valor_unitario FROM Produto WHERE id_produto = ?', (id_produto,)).fetchone()
+            if row is None:
+                raise ValueError('Produto não encontrado.')
+            valor_unitario = float(row['valor_unitario'] or 0.0)
+
             cursor.execute(
                 '''
                 INSERT INTO Item_Pedido (id_pedido, id_produto, qtd_pedido, valor_unitario)

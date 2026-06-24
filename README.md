@@ -11,6 +11,8 @@ API REST para gerenciar clientes, produtos e pedidos.
 - **Clientes**: Cadastrar clientes com nome, email, senha, telefone e endereço
 - **Produtos**: Cadastrar produtos com tipo, nome e descrição
 - **Pedidos**: Criar pedidos vinculados a clientes e adicionar itens aos pedidos
+  - **Produtos**: Cadastrar produtos com tipo, nome, descrição e preço unitário (`valor_unitario`)
+  - **Itens de pedido**: Ao adicionar um item, o sistema usa o `valor_unitario` cadastrado no produto; não é necessário (nem permitido) enviar o preço ao adicionar o item. O total do pedido é calculado automaticamente como soma(qtd * valor_unitario).
 
 ## Como usar
 
@@ -33,6 +35,7 @@ O servidor estará disponível em `http://localhost:5000`
 Acesse `http://localhost:5000` no navegador para usar a **interface gráfica** com:
 - 📝 Formulário para cadastrar clientes
 - 🛍️ Formulário para cadastrar produtos
+- 🛍️ Formulário para cadastrar produtos (agora com campo de preço unitário)
 - 📋 Formulário para criar pedidos
 - 📊 Visualização de todos os pedidos
 
@@ -56,7 +59,8 @@ Acesse `http://localhost:5000` no navegador para usar a **interface gráfica** c
   {
     "tipo": "Extensão",
     "nome": "Curso de Python",
-    "descricao": "Descrição do produto"
+    "descricao": "Descrição do produto",
+    "valor_unitario": 49.90
   }
   ```
 
@@ -66,8 +70,7 @@ Acesse `http://localhost:5000` no navegador para usar a **interface gráfica** c
   {
     "id_cliente": 1,
     "data": "2026-06-24",
-    "status": "pendente",
-    "total": 100.00
+    "status": "pendente"
   }
   ```
 
@@ -79,3 +82,7 @@ Acesse `http://localhost:5000` no navegador para usar a **interface gráfica** c
 - **Flask** - Framework web
 - **SQLite** - Banco de dados
 - **Flask-CORS** - Suporte para CORS
+
+## Observações rápidas
+- Ao adicionar um item ao pedido (`POST /itens-pedido`) envie apenas: `id_pedido`, `id_produto`, `qtd_pedido`.
+- O campo `valor_unitario` do item é preenchido a partir do produto no momento da inserção, preservando o preço histórico do item.

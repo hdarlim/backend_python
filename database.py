@@ -37,7 +37,8 @@ class Database:
                 id_produto INTEGER PRIMARY KEY AUTOINCREMENT,
                 tipo       TEXT NOT NULL,
                 descricao  TEXT,
-                nome       TEXT NOT NULL
+                nome       TEXT NOT NULL,
+                valor_unitario REAL DEFAULT 0.0
             )
         ''')
 
@@ -65,4 +66,11 @@ class Database:
         ''')
 
         conn.commit()
+        # Garantir compatibilidade: adicionar coluna valor_unitario se não existir
+        try:
+            cursor.execute("ALTER TABLE Produto ADD COLUMN valor_unitario REAL DEFAULT 0.0")
+            conn.commit()
+        except sqlite3.OperationalError:
+            # coluna já existe
+            pass
         conn.close()
